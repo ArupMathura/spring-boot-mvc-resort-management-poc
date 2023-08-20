@@ -13,11 +13,11 @@ import java.io.IOException;
 @SpringBootApplication
 public class ResortManagementSystemApplication {
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(ResortManagementSystemApplication.class, args);
-	}*/
+	}
 
-	public static void main(String[] args) throws IOException {
+	/*public static void main(String[] args) throws IOException {
 		ConfigurableApplicationContext context = SpringApplication.run(ResortManagementSystemApplication.class, args);
 
 		ResortController resortController = context.getBean(ResortController.class);
@@ -27,6 +27,6 @@ public class ResortManagementSystemApplication {
 		excelGeneratorService.generateExcel(controllerInfo, "D:\\Intellij-Workspace\\excel\\controller_info.xlsx");
 
 		context.close();
-	}
+	}*/
 
 }

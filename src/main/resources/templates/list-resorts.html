@@ -23,6 +23,33 @@
   <h3>List Resorts</h3>
 
   <hr />
+
+  <!-- Dropdown list of states -->
+  <!--<div class="form-group">
+    <label for="stateSelect">Select a State:</label>
+    <select class="form-control" id="stateSelect">
+      <option value="kolkata">Kolkata</option>
+      <option value="mumbai">Mumbai</option>
+      <option value="bangalore">Bangalore</option>
+      <option value="pune">Pune</option>
+      <option value="hyderabad">Hyderabad</option>
+      &lt;!&ndash; Add more states as needed &ndash;&gt;
+    </select>
+  </div>-->
+
+  <!-- Dynamic dropdown list of states -->
+  <div class="form-group">
+    <label for="stateSelect">Select a State:</label>
+    <select class="form-control" id="stateSelect">
+      <!-- Options will be dynamically populated here -->
+    </select>
+  </div>
+
+  <!-- Filter button -->
+  <button id="filterButton" class="btn btn-primary">Filter Resorts</button>
+  <br />
+  <br />
+
   <a th:href="@{/addResortForm}" class="btn btn-primary">Add Resort</a>
   <br />
   <br />
@@ -75,35 +102,6 @@
     </tbody>
   </table>
 
-  <!-- Pagination --><!--
-  <div class="row justify-content-center">
-    <nav aria-label="Page navigation">
-      <ul class="pagination">
-        <li th:classappend="${currentPage == 0} ? disabled : ''">
-          <a th:href="@{/resort(page=0)}" aria-label="First">
-            <span aria-hidden="true">&laquo;&laquo;</span>
-          </a>
-        </li>
-        <li th:classappend="${currentPage == 0} ? disabled : ''">
-          <a th:href="@{/resort(page=${currentPage - 1})}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li th:classappend="${currentPage == totalPages - 1} ? disabled : ''">
-          <a th:href="@{/resort(page=${currentPage + 1})}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-        <li th:classappend="${currentPage == totalPages - 1} ? disabled : ''">
-          <a th:href="@{/resort(page=${totalPages - 1})}" aria-label="Last">
-            <span aria-hidden="true">&raquo;&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>-->
-</div>
-
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -111,32 +109,76 @@
         type="text/javascript"
         src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"
 ></script>
-<!--<script>
-      $(document).ready(function () {
-        $("#resortTable").DataTable({
-          aoColumnDefs: [
-            {
-              bSortable: false,
-              aTargets: [-1],
-              /* 1st one, start by the right */
-            },
-          ],
-        });
-      });
-    </script>-->
+
 <script>
-    $(document).ready(function () {
-        $("#resortTable").DataTable({
-            aoColumnDefs: [
-                {
-                    bSortable: false,
-                    aTargets: [-1],
-                },
-            ],
-            pageLength: 3, // Set the number of rows per page
-<!--            bPaginate: false, // Hide pagination controls-->
-        });
+  var states = [
+    { value: "kolkata", name: "Kolkata" },
+    { value: "mumbai", name: "Mumbai" },
+    { value: "bangalore", name: "Bangalore" },
+    { value: "pune", name: "Pune" },
+    { value: "hyderabad", name: "Hyderabad" }
+    // Add more states as needed
+  ];
+
+  $(document).ready(function () {
+  var stateSelect = $("#stateSelect");
+
+  // Populate the dynamic dropdown options
+  states.forEach(function (state) {
+    stateSelect.append($("<option>").val(state.value).text(state.name));
+  });
+
+  // DataTables initialization
+  var resortsTable = $("#resortTable").DataTable({
+    aoColumnDefs: [
+      {
+        bSortable: false,
+        aTargets: [-1],
+      },
+    ],
+    pageLength: 3,
+  });
+
+  // Add event listener for filter button click
+  $("#filterButton").on("click", function () {
+    var selectedState = $("#stateSelect").val();
+    filterResortsByState(selectedState);
+  });
+
+  // Function to filter resorts by selected state
+  function filterResortsByState(state) {
+    resortsTable.clear().draw();
+
+    // Fetch the resorts data from the server
+    $.get("/resort", function (data) { // Update the URL here
+      // Create a mapping of states to resorts
+      var stateResortsMapping = {};
+
+      // Populate the mapping
+      data.forEach(function (resort) {
+        var stateName = resort.address.toLowerCase(); // Assuming the "address" field contains the state name
+        if (!stateResortsMapping[stateName]) {
+          stateResortsMapping[stateName] = [];
+        }
+        stateResortsMapping[stateName].push(resort);
+      });
+
+      // Filter and add resorts based on the selected state
+      var filteredResorts = stateResortsMapping[state.toLowerCase()] || [];
+      filteredResorts.forEach(function (resort) {
+        resortsTable.row.add([
+          resort.id,
+          resort.name,
+          resort.address,
+          // Add action buttons here if needed
+        ]);
+      });
+
+      resortsTable.draw();
     });
+  }
+});
+
 </script>
 
 </body>
