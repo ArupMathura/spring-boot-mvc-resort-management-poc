@@ -1,5 +1,6 @@
 package com.poc.resortmanagementsystem.controller;
 
+import com.poc.resortmanagementsystem.entity.ControllerInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.poc.resortmanagementsystem.entity.Resort;
 import com.poc.resortmanagementsystem.repository.ResortRepository;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class ResortController {
@@ -102,6 +108,30 @@ public class ResortController {
 	}
 
 
+	/*Modify your ResortController class to populate the information you want to
+	capture into instances of the ControllerInfo class. You can do this
+	by using reflection to get the class name, request mapping URLs,
+	and method names*/
 
+	@ModelAttribute("controllerInfo")
+	public ControllerInfo getControllerInfo() {
+		ControllerInfo info = new ControllerInfo();
+		info.setControllerName(getClass().getSimpleName());
+
+		RequestMapping controllerMapping = getClass().getAnnotation(RequestMapping.class);
+		if (controllerMapping != null) {
+			info.setRequestMappingUrls(Arrays.asList(controllerMapping.value()));
+		}
+
+		List<String> methodNames = new ArrayList<>();
+		for (Method method : getClass().getDeclaredMethods()) {
+			if (method.isAnnotationPresent(GetMapping.class) || method.isAnnotationPresent(PostMapping.class)) {
+				methodNames.add(method.getName());
+			}
+		}
+		info.setMethodNames(methodNames);
+
+		return info;
+	}
 
 }
