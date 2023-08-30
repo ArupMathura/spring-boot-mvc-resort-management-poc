@@ -1,0 +1,104 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>List Resorts</title>
+
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+            integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+            crossorigin="anonymous"
+    />
+</head>
+
+<body>
+
+
+<div class="container">
+
+    <h3>List Resorts</h3>
+
+    <hr />
+    <a th:href="@{/addResortForm}" class="btn btn-primary">Add Resort</a>
+    <br />
+    <br />
+    <table class="table table-bordered table-striped" id="resortTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="resort: ${resorts}">
+            <td th:text="${resort.id}" />
+            <td th:text="${resort.name}" />
+            <td th:text="${resort.address}" />
+            <td>
+                <a th:href="@{/resort/{resortId}/roomlist(resortId=${resort.id})}"
+                >Room</a
+                >
+                <!--
+                <a
+                        th:href="@{/showUpdateForm(resortId=${resort.id})}"
+                        class="btn btn-info"
+                >Update</a
+                >
+                -->
+                <a
+                        th:href="@{/updateResortForm/{id}(id=${resort.id})}"
+                        class="btn btn-info"
+                >Update</a
+                >
+                <!--
+                <a
+                        th:href="@{/deleteResort/{resortId}(resortId=${resort.id})}"
+                        class="btn btn-danger ml-2"
+                        onsubmit="return confirm('Are you sure you want to delete this resort?');"
+                >Delete</a
+                >
+                -->
+
+                <a th:href="@{/deleteResort/{id}(id=${resort.id})}"
+                   class="btn btn-danger ml-2"
+                   onclick="return confirm('Are you sure you want to delete this resort?');"
+                >Delete</a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+        type="text/javascript"
+        src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"
+></script>
+
+<script>
+    $(document).ready(function () {
+        $("#resortTable").DataTable({
+            aoColumnDefs: [
+                {
+                    bSortable: false,
+                    aTargets: [-1],
+                },
+            ],
+            pageLength: 3, // Set the number of rows per page
+<!--            bPaginate: false, // Hide pagination controls-->
+        });
+    });
+</script>
+
+</body>
+</html>
